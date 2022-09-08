@@ -3,6 +3,8 @@ import re
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
+from django_redis import get_redis_connection
+
 from apps.users.models import User
 
 """
@@ -87,6 +89,7 @@ class RegisterView(View):
         password2 = body_dict.get('password2')
         mobile = body_dict.get('mobile')
         allow = body_dict.get('allow')
+        sms_code = body_dict.get('sms_code')
         # 3. 验证数据
         #     3.1 用户名，密码，确认密码，手机号，是否同意协议 都要有
         # all([xxx,xxx,xxx])
@@ -114,22 +117,36 @@ class RegisterView(View):
         if not allow:
             return JsonResponse({'code': 400, 'errmsg': '需要同意协议'})
 
+        # 判断短信验证码是否正确：跟图形验证码的验证一样的逻辑
+        # 提取服务端存储的短信验证码：以前怎么存储，现在就怎么提取
+        redis_conn = get_redis_connection('code')
+        sms_code_server = redis_conn.get(mobile)  # sms_code_server是bytes
+        # 判断短信验证码是否过期
+        if not sms_code_server:
+            return JsonResponse({'code': 400, 'errmsg': '短信验证码失效'})
+        # 对比用户输入的和服务端存储的短信验证码是否一致
+        if sms_code != sms_code_server.decode():
+            return JsonResponse({'code': 400, 'errmsg': '短信验证码有误'})
         # 4. 数据入库
         # user = User(username=username, password=password, mobile=mobile)
         # user.save()
         # User.objects.create(username=username, password=password, mobile=mobile)
         # 密码就加密
         try:
-            user=User.objects.create_user(username=username,password=password,mobile=mobile)
+            user = User.objects.create_user(username=username, password=password, mobile=mobile)
         except Exception as e:
             return JsonResponse({'code': 400, 'errmsg': '注册失败'})
         # 如何设置session信息
         # request.session['user_id']=user.id
 
+        # 注册时短信验证后端逻辑
+
         # 系统（Django）为我们提供了 状态保持的方法
         from django.contrib.auth import login
-        login(request,user)
+        login(request, user)
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+
 """
 如果需求是注册成功后即表示用户认证通过，那么此时可以在注册成功后实现状态保持 (注册成功即已经登录)  v
 如果需求是注册成功后不表示用户认证通过，那么此时不用在注册成功后实现状态保持 (注册成功，单独登录)
