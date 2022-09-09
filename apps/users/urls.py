@@ -17,5 +17,9 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view()),
     # 登录
     path('login/', views.LoginView.as_view()),
+    # 退出
+    path('logout/', views.LogoutView.as_view()),
+    # 退出
+    path('info/', views.CenterView.as_view()),
 
 ]
