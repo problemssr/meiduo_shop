@@ -14,6 +14,8 @@ urlpatterns = [
     # 判断手机号是否重复
     path('mobiles/<phone:phone>/count/', views.PhoneCountView.as_view()),
     # 注册
-    path('register/', views.RegisterView.as_view())
+    path('register/', views.RegisterView.as_view()),
+    # 登录
+    path('login/', views.LoginView.as_view()),
 
 ]
