@@ -146,7 +146,10 @@ class QQAuthUserView(View):
                 3.验证封装的代码
 
             """
-            response = JsonResponse({'code': 400, 'access_token': openid})
+            from apps.oauth.utils import generic_openid
+            access_token = generic_openid(openid)
+
+            response = JsonResponse({'code': 400, 'access_token': access_token})
             return response
         else:
             # 存在
@@ -160,13 +163,42 @@ class QQAuthUserView(View):
             return response
 
     def post(self, request):
+        """
+        需求： 绑定账号信息
+
+            QQ(openid) 和 美多的账号信息
+
+        前端：
+                当用户输入 手机号，密码，短信验证码之后就发送axios请求。请求需要携带 mobile,password,sms_code,access_token(openid)
+        后端：
+
+            请求：         接收请求，获取请求参数
+            业务逻辑：       绑定，完成状态保持
+            响应：         返回code=0 跳转到首页
+            路由：          POST   oauth_callback/
+            步骤：
+
+                    1. 接收请求
+                    2. 获取请求参数  openid
+                    3. 根据手机号进行用户信息的查询
+                    4. 查询到用户手机号已经注册了。判断密码是否正确。密码正确就可以直接保存（绑定） 用户和openid信息
+                    5. 查询到用户手机号没有注册。我们就创建一个user信息。然后再绑定
+                    6. 完成状态保持
+                    7. 返回响应
+
+        """
         # 1. 接收请求
         data = json.loads(request.body)
         # 2. 获取请求参数  openid
         mobile = data.get('mobile')
         password = data.get('password')
         sms_code = data.get('sms_code')
-        openid = data.get('access_token')
+        access_token = data.get('access_token')
+        # 添加对 access-token 解密
+        from apps.oauth.utils import check_access_token
+        openid=check_access_token(access_token)
+        if openid is None:
+            return JsonResponse({'code': 400, 'errmsg': '参数缺失'})
 
         # 3. 根据手机号进行用户信息的查询
         try:
@@ -191,27 +223,32 @@ class QQAuthUserView(View):
 
         return response
 
-"""
-需求： 绑定账号信息
 
-    QQ(openid) 和 美多的账号信息
+##########itsdangerous的基本使用##############################################
+# itsdangerous就是为了数据加密的
 
-前端：
-        当用户输入 手机号，密码，短信验证码之后就发送axios请求。请求需要携带 mobile,password,sms_code,access_token(openid)
-后端：
+# 加密
+# 1. 导入 itsdangerous的类
+# 2. 创建类的实例对象
+# 3. 加密数据
 
-    请求：         接收请求，获取请求参数
-    业务逻辑：       绑定，完成状态保持
-    响应：         返回code=0 跳转到首页
-    路由：          POST   oauth_callback/
-    步骤：
+from mieShop import settings
+# 1. 导入 itsdangerous的类
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
-            1. 接收请求
-            2. 获取请求参数  openid
-            3. 根据手机号进行用户信息的查询
-            4. 查询到用户手机号已经注册了。判断密码是否正确。密码正确就可以直接保存（绑定） 用户和openid信息
-            5. 查询到用户手机号没有注册。我们就创建一个user信息。然后再绑定
-            6. 完成状态保持
-            7. 返回响应
+# TimedJSONWebSignatureSerializer 这个类 不仅可以对数据进行加密，还是可以对数据设置一个时效
+# 2. 创建类的实例对象
+# secret_key,           秘钥
+# expires_in=None       数据的过期时间（单位是秒）
+s = Serializer(secret_key=settings.SECRET_KEY, expires_in=3600)
+# 3. 加密数据
+token = s.dumps({'openid': '1234567890'})
 
-"""
+###########################解密###############################
+# 1. 导入 itsdangerous的类
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+
+# 2. 创建类的实例对象
+s = Serializer(secret_key=settings.SECRET_KEY, expires_in=3600)
+# 3. 解密数据
+s.loads(token)
