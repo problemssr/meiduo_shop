@@ -21,5 +21,9 @@ urlpatterns = [
     path('logout/', views.LogoutView.as_view()),
     # 退出
     path('info/', views.CenterView.as_view()),
+    # 邮件
+    path('emails/', views.EmailView.as_view()),
+    # 验证邮件
+    path('emails/verification/', views.EmailVerifyView.as_view())
 
 ]

@@ -264,4 +264,175 @@ from utils.views import LoginRequiredJSONMixin
 
 class CenterView(LoginRequiredJSONMixin, View):
     def get(self, request):
+        # request.user 就是 已经登录的用户信息
+        # request.user 是来源于 中间件
+        # 系统会进行判断 如果我们确实是登录用户，则可以获取到 登录用户对应的 模型实例数据
+        # 如果我们确实不是登录用户，则request.user = AnonymousUser()  匿名用户
+        info_data = {
+            'username': request.user.username,
+            'email': request.user.email,
+            'mobile': request.user.mobile,
+            'email_active': request.user.email_active,
+        }
+
+        return JsonResponse({'code': 0, 'errmsg': 'ok', 'info_data': info_data})
+
+
+"""
+需求：     1.保存邮箱地址  2.发送一封激活邮件  3. 用户激活邮件
+
+前端：
+    当用户输入邮箱之后，点击保存。这个时候会发送axios请求。
+
+后端：
+    请求           接收请求，获取数据
+    业务逻辑        保存邮箱地址  发送一封激活邮件
+    响应           JSON  code=0
+
+    路由          PUT     
+    步骤
+        1. 接收请求
+        2. 获取数据
+        3. 保存邮箱地址
+        4. 发送一封激活邮件
+        5. 返回响应
+
+
+需求（要实现什么功能） --> 思路（ 请求。业务逻辑。响应） --> 步骤  --> 代码实现
+"""
+
+
+class EmailView(LoginRequiredJSONMixin, View):
+    def put(self, request):
+        # 1. 接收请求
+        # put post---body
+        data = json.loads(request.body)
+        # 2. 获取数据
+        email = data.get('email')
+        # 验证数据
+        # 正则　
+        # 3. 保存邮箱地址
+        user = request.user
+        # user / request.user 就是　登录用户的　实例对象
+        # user --> User
+        user.email = email
+        user.save()
+        # 4. 发送一封激活邮件
+        # 一会单独讲发送邮件
+        from django.core.mail import send_mail
+        # subject, message, from_email, recipient_list,
+        # subject,      主题
+        subject = '美多商城激活邮件'
+        # message,      邮件内容
+        message = "你好啊"
+        # from_email,   发件人
+        from_email = '美多商城<excellentchina@163.com>'
+        # recipient_list, 收件人列表
+        recipient_list = ['2298269347@qq.com', 'excellentchina@163.com']
+        # 邮件的内容如果是 html 这个时候使用 html_message
+        # 4.1 对a标签的连接数据进行加密处理
+        # user_id=1
+        from apps.users.utils import generic_email_verify_token
+        token = generic_email_verify_token(request.user.id)
+        # print(token)
+        verify_url = "http://www.meiduo.site:8080/success_verify_email.html?token=%s" % token
+        # 4.2 组织我们的激活邮件
+        html_message = '<p>尊敬的用户您好！</p>' \
+                       '<p>感谢您使用美多商城。</p>' \
+                       '<p>您的邮箱为：%s 。请点击此链接激活您的邮箱：</p>' \
+                       '<p><a href="%s">%s<a></p>' % (email, verify_url, verify_url)
+
+        # html_message = "点击按钮进行激活 <a href='http://www.itcast.cn/?token=%s'>激活</a>" % token
+
+        # send_mail(subject=subject,
+        #           message=message,
+        #           from_email=from_email,
+        #           recipient_list=recipient_list,
+        #           html_message=html_message)
+        from celery_tasks.email.tasks import celery_send_email
+        celery_send_email.delay(subject=subject,
+                                message=message,
+                                from_email=from_email,
+                                recipient_list=recipient_list,
+                                html_message=html_message)
+        # 5. 返回响应
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+
+"""
+django 项目
+1. django的基础 夯实
+2. 需求分析
+3. 学习新知识
+4. 掌握分析问题，解决问题的能力（debug）
+"""
+
+"""
+
+1. 设置邮件服务器
+
+    我们设置 163邮箱服务器
+    相当于 我们开启了 让163帮助我们发送邮件。同时设置了 一些信息（特别是授权码）
+
+2.  设置邮件发送的配置信息
+    #  让django的哪个类来发送邮件
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    # 邮件服务器的主机和端口号
+    EMAIL_HOST = 'smtp.163.com'
+    EMAIL_PORT = 25
+
+    # 使用我的 163服务器 和 授权码
+    #发送邮件的邮箱
+    EMAIL_HOST_USER = 'qi_rui_hua@163.com'
+    #在邮箱中设置的客户端授权密码
+    EMAIL_HOST_PASSWORD = '123456abc'
+
+3. 调用  send_mail 方法
+"""
+
+"""
+需求（知道我们要干什么？？？）：
+    激活用户的邮件
+前端(用户干了什么，传递了什么参数)：
+        用户会点击那个激活连接。那个激活连接携带了token
+后端：
+    请求：         接收请求，获取参数，验证参数
+    业务逻辑：       user_id, 根据用户id查询数据，修改数据
+    响应：         返回响应JSON
+
+    路由：         PUT     emails/verification/  说明： token并没有在body里
+    步骤：
+
+        1. 接收请求
+        2. 获取参数
+        3. 验证参数
+        4. 获取user_id
+        5. 根据用户id查询数据
+        6. 修改数据
+        7. 返回响应JSON
+
+"""
+
+
+class EmailVerifyView(View):
+
+    def put(self, request):
+        # 1. 接收请求
+        data = request.GET
+        # 2. 获取参数
+        token = data.get('token')
+        # 3. 验证参数
+        if token is None:
+            return JsonResponse({'code': 400, 'errmsg': '参数缺失'})
+        # 4. 获取user_id
+        from apps.users.utils import check_verify_token
+        user_id = check_verify_token(token)
+        # 5. 根据用户id查询数据
+        user = User.objects.get(id=user_id)
+        # 6. 修改数据
+        user.email_active = True
+        user.save()
+        # 7. 返回响应JSON
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+
