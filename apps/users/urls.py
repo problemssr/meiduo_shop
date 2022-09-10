@@ -24,6 +24,18 @@ urlpatterns = [
     # 邮件
     path('emails/', views.EmailView.as_view()),
     # 验证邮件
-    path('emails/verification/', views.EmailVerifyView.as_view())
+    path('emails/verification/', views.EmailVerifyView.as_view()),
+    # 新增住址
+    path('addresses/create/', views.AddressCreateView.as_view()),
+    # 查询住址
+    path('addresses/', views.AddressView.as_view()),
+    # 修改|删除地址
+    path('addresses/<address_id>/', views.UpdateDestroyAddressView.as_view()),
+    # 默认地址
+    path('addresses/<address_id>/default/', views.DefaultAddressView.as_view()),
+    # 修改地址标题
+    path('addresses/<address_id>/title/', views.DefaultAddressView.as_view()),
+    # 修改密码
+    path('password/',views.ChangePasswordView.as_view())
 
 ]
