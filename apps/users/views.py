@@ -224,6 +224,10 @@ class LoginView(View):
         # 为了首页显示用户信息
         response.set_cookie('username', username)
 
+        # 必须登录后 合并购物车
+        from apps.carts.utils import merge_cookie_to_redis
+        response = merge_cookie_to_redis(request, response)
+
         return response
 
 
