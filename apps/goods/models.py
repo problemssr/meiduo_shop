@@ -166,7 +166,7 @@ class SKUSpecification(BaseModel):
 
 class GoodsVisitCount(BaseModel):
     """统计分类商品访问量模型类"""
-    category = models.ForeignKey(GoodsCategory, on_delete=models.CASCADE, verbose_name='商品分类')
+    category = models.ForeignKey(GoodsCategory, on_delete=models.CASCADE, verbose_name='商品分类', null=True)
     count = models.IntegerField(verbose_name='访问量', default=0)
     date = models.DateField(auto_now_add=True, verbose_name='统计日期')
 
