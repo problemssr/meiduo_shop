@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'apps.contents',
     # CORS
     'corsheaders',
+    'haystack',
 ]
 
 MIDDLEWARE = [
@@ -233,3 +234,16 @@ EMAIL_HOST_USER = 'excellentchina@163.com'
 EMAIL_HOST_PASSWORD = 'ATFXLEWWVSCNEJPM'
 # # 收件人看到的发件人
 # EMAIL_FROM = '美多商城<qi_rui_hua@163.com>'
+
+
+###########es配置#################
+# Haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch2_backend.Elasticsearch2SearchEngine',
+        'URL': 'http://127.0.0.1:9200/',  # Elasticsearch服务器ip地址，端口号固定为9200
+        'INDEX_NAME': 'mieshop',  # Elasticsearch建立的索引库的名称
+    },
+}
+# 设置每页返回数据条数
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
