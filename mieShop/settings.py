@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # CORS
     'corsheaders',
     'haystack',
+    # 'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -112,6 +113,13 @@ CACHES = {
     "code": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "history": {  # 用户浏览记录
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/3",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -247,3 +255,22 @@ HAYSTACK_CONNECTIONS = {
 }
 # 设置每页返回数据条数
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 5
+
+#########定时任务##############
+
+"""
+# 元素的第一个参数是 频次
+分 时 日 月 周    命令
+
+M: 分钟（0-59）。每分钟用 * 或者 */1 表示
+H：小时（0-23）。（0表示0点）
+D：天（1-31）。
+m: 月（1-12）。
+d: 一星期内的天（0~6，0为星期天）。
+
+# 元素的第二个参数是 定时任务（函数）
+"""
+# CRONJOBS = [
+#     ('*/1 * * * *', 'apps.contents.crons.generic_meiduo_index', '>> ' + os.path.join(BASE_DIR, 'logs/crontab.log'))
+#
+# ]
