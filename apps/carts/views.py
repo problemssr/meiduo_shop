@@ -256,7 +256,7 @@ class CartsView(View):
             redis_cli = get_redis_connection('carts')
             pipeline = redis_cli.pipeline()
             #     4.2 操作hash
-            # redis_cli.hset(key,field,value)
+            # redis_cli.hset(keys,field,value)
             # 1. 先获取之前的数据，然后累加
             # 2.
             # redis_cli.hset('carts_%s'%user.id,sku_id,count)
@@ -320,7 +320,7 @@ class CartsView(View):
             base64encode = base64.b64encode(carts_bytes)
             #     5.4 设置cookie
             response = JsonResponse({'code': 0, 'errmsg': 'ok'})
-            # key, value='', max_age=None
+            # keys, value='', max_age=None
             # base64encode.decode() 的作用是 将bytes类型转换为 str
             # 因为 value的数据是 str数据
             response.set_cookie('carts', base64encode.decode(), max_age=3600 * 24 * 12)
@@ -535,7 +535,7 @@ class CartsView(View):
         # 2.验证参数
         sku_id = data.get('sku_id')
         try:
-            SKU.objects.get(pk=sku_id)  # pk primary key
+            SKU.objects.get(pk=sku_id)  # pk primary keys
         except SKU.DoesNotExist:
             return JsonResponse({'code': 400, 'errmsg': '没有此商品'})
         # 3.根据用户状态

@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret keys used in production secret!
 SECRET_KEY = 'django-insecure-x=@)s%#bi-r-qxvbz)8a0kd^16qd87%xfd@4spv=!f-(e1ng)='
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'apps.contents',
     'apps.carts',
     'apps.orders',
+    'apps.payment',
     # CORS
     'corsheaders',
     'haystack',
@@ -171,7 +172,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-# Default primary key field type
+# Default primary keys field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -283,3 +284,11 @@ d: 一星期内的天（0~6，0为星期天）。
 #     ('*/1 * * * *', 'apps.contents.crons.generic_meiduo_index', '>> ' + os.path.join(BASE_DIR, 'logs/crontab.log'))
 #
 # ]
+
+#########支付宝相关###############
+ALIPAY_APPID = '2021000121664113'
+ALIPAY_DEBUG = True
+ALIPAY_URL = 'https://openapi.alipaydev.com/gateway.do'
+ALIPAY_RETURN_URL = 'http://www.meiduo.site:8080/pay_success.html'
+APP_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'apps/payment/keys/app_private_key.pem')
+ALIPAY_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'apps/payment/keys/alipay_public_key.pem')

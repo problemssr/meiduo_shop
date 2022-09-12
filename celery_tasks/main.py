@@ -18,7 +18,7 @@
     # 我们通过加载配置文件来设置broker
     app.config_from_object('celery_tasks.config')
 
-    # 配置信息 key=value
+    # 配置信息 keys=value
     # 我们指定 redis为我们的broker(中间人，经纪人，队列)
     broker_url="redis://127.0.0.0:6379/15"
 

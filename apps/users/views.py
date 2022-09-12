@@ -741,7 +741,7 @@ class ChangePasswordView(LoginRequiredMixin, View):
 
 user_id,sku_id,顺序
 
-key: value
+keys: value
 
 redis:
     string:   x  
