@@ -48,7 +48,7 @@ def get_categories():
             cat3s = GoodsCategory.objects.filter(parent=cat2)
             # 根据 cat2 的外键反向, 获取下一级(三级菜单)的所有分类数据, 并遍历:
             for cat3 in cat3s:
-                # 拼接新的列表: key: 二级菜单名称, value: 三级菜单组成的列表
+                # 拼接新的列表: keys: 二级菜单名称, value: 三级菜单组成的列表
                 cat2.sub_cats.append(cat3)
             # 所有内容在增加到 一级菜单生成的 有序字典中去:
             categories[group_id]['sub_cats'].append(cat2)

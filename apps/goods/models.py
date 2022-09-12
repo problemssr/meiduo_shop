@@ -32,8 +32,8 @@ class GoodsChannelGroup(BaseModel):
 
 class GoodsChannel(BaseModel):
     """商品频道"""
-    group = models.ForeignKey(GoodsChannelGroup, on_delete=models.CASCADE, verbose_name='频道组名')
-    category = models.ForeignKey(GoodsCategory, on_delete=models.CASCADE, verbose_name='顶级商品类别')
+    # group = models.ForeignKey(GoodsChannelGroup, on_delete=models.CASCADE, verbose_name='频道组名')
+    # category = models.ForeignKey(GoodsCategory, on_delete=models.CASCADE, verbose_name='顶级商品类别')
     url = models.CharField(max_length=50, verbose_name='频道页面链接')
     sequence = models.IntegerField(verbose_name='组内顺序')
 
@@ -42,8 +42,8 @@ class GoodsChannel(BaseModel):
         verbose_name = '商品频道'
         verbose_name_plural = verbose_name
 
-    def __str__(self):
-        return self.category.name
+    # def __str__(self):
+    #     return self.category.name
 
 
 class Brand(BaseModel):
@@ -166,7 +166,7 @@ class SKUSpecification(BaseModel):
 
 class GoodsVisitCount(BaseModel):
     """统计分类商品访问量模型类"""
-    category = models.ForeignKey(GoodsCategory, on_delete=models.CASCADE, verbose_name='商品分类', null=True)
+    # category = models.ForeignKey(GoodsCategory, on_delete=models.CASCADE, verbose_name='商品分类', null=True)
     count = models.IntegerField(verbose_name='访问量', default=0)
     date = models.DateField(auto_now_add=True, verbose_name='统计日期')
 

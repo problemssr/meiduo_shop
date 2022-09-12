@@ -39,7 +39,7 @@ class AreaView(View):
                     'name': province.name
                 })
             # 保存缓存数据
-            # cache.set(key,value,expire)
+            # cache.set(keys,value,expire)
             cache.set('province', province_list, 24 * 3600)
         # 3.返回响应
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'province_list': province_list})
