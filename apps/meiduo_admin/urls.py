@@ -13,7 +13,12 @@ urlpatterns = [
     path('statistical/day_orders/', home.DailyOrderCountAPIView.as_view()),
 
     # user
-    path('users/', user.UserAPIView.as_view()),
+    path('users/', user.UserAPIView.as_view()),    # 获取图片新增中的 sku展示
+    path('skus/simple/', images.ImageSKUAPIView.as_view()),
+
+    #
+    # path('skus/categories/', sku.GoodsCategoryAPIView.as_view()),
+
 ]
 from rest_framework.routers import DefaultRouter
 
