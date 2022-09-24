@@ -55,7 +55,18 @@ class PageNum(PageNumberPagination):
             ('pagesize', self.page.paginator.per_page)  # 一页多少条记录
         ]))
 
+
 class UserAPIView(ListAPIView):
-    queryset = User.objects.all()
+    # queryset = User.objects.all()
+    # 设置属性 queryset 只能设置一个查询结果集
+    # 设置方法  def get_queryset(self): 可以根据  不同的业务逻辑返回不同的查询结果集
+    def get_queryset(self):
+        keyword = self.request.query_params.get('keyword')
+
+        if keyword:
+            return User.objects.filter(username__contains=keyword)
+
+        return User.objects.all()
+
     serializer_class = UserModelSerializer
     pagination_class = PageNum
