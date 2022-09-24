@@ -56,7 +56,13 @@ class PageNum(PageNumberPagination):
         ]))
 
 
-class UserAPIView(ListAPIView):
+# class UserAPIView(ListAPIView):
+from rest_framework.mixins import CreateModelMixin
+from rest_framework.generics import ListCreateAPIView
+# from apps.meiduo_admin.utils import PageNum
+
+
+class UserAPIView(ListCreateAPIView):
     # queryset = User.objects.all()
     # 设置属性 queryset 只能设置一个查询结果集
     # 设置方法  def get_queryset(self): 可以根据  不同的业务逻辑返回不同的查询结果集
