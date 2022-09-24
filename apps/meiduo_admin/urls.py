@@ -16,13 +16,13 @@ urlpatterns = [
     path('users/', user.UserAPIView.as_view()),  # 获取图片新增中的 sku展示
     path('skus/simple/', images.ImageSKUAPIView.as_view()),
 
-    #
-    # path('skus/categories/', sku.GoodsCategoryAPIView.as_view()),
+    # 三级分类数据
+    path('skus/categories/', sku.GoodsCategoryAPIView.as_view()),
     # sku 中获取 spu的数据
-    # path('goods/simple/', sku.SPUListAPIView.as_view()),
+    path('goods/simple/', sku.SPUListAPIView.as_view()),
     #
     # # sku 中获取 spu的规格和规格选项
-    # path('goods/<spu_id>/specs/', sku.SPUSpecAPIView.as_view()),
+    path('goods/<int:spu_id>/specs/', sku.SPUSpecAPIView.as_view()),
     #
     # # 权限中 获取 ContentType 的数据
     # path('permission/content_types/', permissions.ConentTypeListAPIView.as_view()),
