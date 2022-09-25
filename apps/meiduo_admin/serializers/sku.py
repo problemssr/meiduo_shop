@@ -71,6 +71,39 @@ class SKUModelSerializer(serializers.ModelSerializer):
         model = SKU
         fields = '__all__'
 
+    def create(self, validated_data):
+        # validated_data  其实是等于 我们序列化器 通过字段 验证的数据
+        # 当前 我们在 序列化器中 并没有定义 specs 所以 validated_data 里没有 specs
+        # 我们想要获取 specs 有至少2种方法
+        # 1. 添加 specs 字段
+        # 2. 通过 断点我们发现  self.context['request'] 可以获取 当前的请求对象.
+
+        # 保存 sku和 sku规格.规格选项
+
+        # 1. 把 规格和规格选项 单独获取出来
+        specs = validated_data.pop('specs')
+
+        from django.db import transaction
+
+        with transaction.atomic():
+            # ①事务开始点
+            save_point = transaction.savepoint()
+
+            try:
+                # 2. 先保存sku数据
+                sku = SKU.objects.create(**validated_data)
+                # 3. 对规格和规格选项进行遍历保存
+                for spec in specs:
+                    # spec = {spec_id: "4", option_id: 8}
+                    SKUSpecification.objects.create(sku=sku, **spec)
+            except Exception:
+                # ② 事务回滚点
+                transaction.savepoint_rollback(save_point)
+            else:
+                # ③ 事务提交点
+                transaction.savepoint_commit(save_point)
+
+        return sku
 
 
 ##########三级分类数据序列化器############################################
