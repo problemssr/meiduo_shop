@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from apps.meiduo_admin.views import home, user, images, sku
+from apps.meiduo_admin.views import home, user, images, sku, permissions
 from apps.meiduo_admin.views.token import MyTokenObtainPairView
 
 urlpatterns = [
@@ -50,7 +50,7 @@ urlpatterns += rouer.urls
 rouer.register('skus', sku.SKUModelViewSet, basename='skus')
 
 ###############权限##################################
-# rouer.register('permission/perms',permissions.PermissionModelViewSet,basename='perms')
+rouer.register('permission/perms', permissions.PermissionModelViewSet, basename='perms')
 #
 # ###############组##################################
 # rouer.register('permission/groups',permissions.GroupModelViewSet,basename='groups')
