@@ -28,7 +28,7 @@ urlpatterns = [
     path('permission/content_types/', permissions.ConentTypeListAPIView.as_view()),
     #
     # # 组中 获取 权限列表数据
-    # path('permission/simple/', permissions.GroupPermissionListAPIView.as_view()),
+    path('permission/simple/', permissions.GroupPermissionListAPIView.as_view()),
     #
     # # 组中 获取 权限列表数据
     # path('permission/groups/simple/', permissions.SimpleGroupListAPIView.as_view()),
