@@ -31,7 +31,7 @@ urlpatterns = [
     path('permission/simple/', permissions.GroupPermissionListAPIView.as_view()),
     #
     # # 组中 获取 权限列表数据
-    # path('permission/groups/simple/', permissions.SimpleGroupListAPIView.as_view()),
+    path('permission/groups/simple/', permissions.SimpleGroupListAPIView.as_view()),
 ]
 from rest_framework.routers import DefaultRouter
 
@@ -56,7 +56,7 @@ rouer.register('permission/perms', permissions.PermissionModelViewSet, basename=
 rouer.register('permission/groups', permissions.GroupModelViewSet, basename='groups')
 #
 # ###############普通管理员##################################
-# rouer.register('permission/admins',permissions.AdminUserModelViewSet,basename='admins')
+rouer.register('permission/admins', permissions.AdminUserModelViewSet, basename='admins')
 
 # 3.追加到 urlpatterns
 urlpatterns += rouer.urls

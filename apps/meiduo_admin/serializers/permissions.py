@@ -27,3 +27,19 @@ class GroupModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = '__all__'
+
+
+#####################普通管理员序列化器#################################
+from apps.users.models import User
+
+
+class AdminUserModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'  # ['id','username','mobile','email','password']
+
+        extra_kwargs = {
+            'password': {
+                'write_only': True
+            }
+        }
