@@ -53,7 +53,7 @@ rouer.register('skus', sku.SKUModelViewSet, basename='skus')
 rouer.register('permission/perms', permissions.PermissionModelViewSet, basename='perms')
 #
 # ###############组##################################
-# rouer.register('permission/groups',permissions.GroupModelViewSet,basename='groups')
+rouer.register('permission/groups', permissions.GroupModelViewSet, basename='groups')
 #
 # ###############普通管理员##################################
 # rouer.register('permission/admins',permissions.AdminUserModelViewSet,basename='admins')
