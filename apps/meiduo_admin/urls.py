@@ -25,7 +25,7 @@ urlpatterns = [
     path('goods/<int:spu_id>/specs/', sku.SPUSpecAPIView.as_view()),
     #
     # # 权限中 获取 ContentType 的数据
-    # path('permission/content_types/', permissions.ConentTypeListAPIView.as_view()),
+    path('permission/content_types/', permissions.ConentTypeListAPIView.as_view()),
     #
     # # 组中 获取 权限列表数据
     # path('permission/simple/', permissions.GroupPermissionListAPIView.as_view()),
